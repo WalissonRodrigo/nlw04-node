@@ -14,8 +14,13 @@ class UserController {
     Object.keys(body).forEach((key) => {
       user[key] = body[key];
     });
-    try {
+    try {      
       const userRepository = getRepository(User);
+      // valid unique user
+      const userAlreadyExists = await userRepository.findOne({email: user.email})
+      if(userAlreadyExists){
+        return res.status(400).json({status: 400, error: "User already exists!"})
+      }
       await userRepository.save(user);
     } catch (error) {
       return res.status(500).json({ status: 500, error });
